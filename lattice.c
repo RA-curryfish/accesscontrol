@@ -102,18 +102,16 @@ int addLabelPolicy( FILE *fh, char *name, char *level_char ){
     temp2->name = (char *)malloc(temp2->len+1);
     strncpy(temp2->name,name,temp2->len);
     temp2->name[temp2->len]='\0';
-    temp2->level=(level *)temp1->data;
+    temp2->l=(level *)temp1->data;
 	/* hint - create element for label_mapping */
 	/* YOUR CODE GOES HERE */
     new->type = E_MAP;
     new->data = (void *)temp2;
     new->next = NULL;
-    new->prev = NULL;
     /* add the above element to label mappings */ 
 	insert( &label_mapping, new, NULL );	
 	fprintf( fh, "AddLabelPolicy[p%d]: Add mapping for name %s to level %s\n", cmdCt, name, level_char );
-    free( new );
-    free( temp2 );
+
 	return 0;
 }
 
@@ -149,7 +147,7 @@ int addTransPolicy( FILE *fh, char *subj_level, char *obj_level, char* new_level
 
 	/* make trans node */
 	/* YOUR CODE GOES HERE */
-    trans *temp4 = (element *)malloc(sizeof(element));
+    trans *temp4 = (trans *)malloc(sizeof(trans));
     temp4->new = (level *)temp3->data;
     temp4->subj = (level *)temp1->data;
     temp4->obj = (level *)temp2->data;
@@ -164,8 +162,6 @@ int addTransPolicy( FILE *fh, char *subj_level, char *obj_level, char* new_level
 	insert( &trans_mapping, new, NULL );
 	fprintf( fh, "AddTransPolicy[p%d]: on %s, if subject level is %s and object level is %s, \n\t\t\t then transition %s to level %s\n", cmdCt, 
                     (( op == O_EXEC ) ? "EXEC" : (( op == O_READ ) ? "READ" : "WRITE" )), subj_level, obj_level, (( ttype == T_PROC ) ? "PROCESS" : "FILE"), new_level );
-    free( new );
-    free( temp4 );
 
 	return 0;
 }

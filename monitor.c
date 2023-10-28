@@ -122,7 +122,7 @@ int labelProcess( FILE *fh, char *name, char *proc, list *mapping ){
 		fprintf( fh, "ERROR labelProcess[t%d]: no mapping for name: %s\n", cmdCt, name );
 		return -1;
 	}
-	m->l = (level *)temp1->data;
+	m->l = ((map *)temp1->data)->l;
 	m->len = strlen(proc);
 	m->name = (char *)malloc(m->len+1);
 	m->name[m->len]='\0';
@@ -131,7 +131,6 @@ int labelProcess( FILE *fh, char *name, char *proc, list *mapping ){
 	/* YOUR CODE GOES HERE */
 	new->data = (void *)m;
 	new->next = NULL;
-	new->prev = NULL;
 	new->type = E_MAP;
 	insert(&system_mapping,new,NULL);
 
@@ -141,8 +140,6 @@ int labelProcess( FILE *fh, char *name, char *proc, list *mapping ){
 	level[m->l->len] = 0;
 	fprintf( fh, "labelProcess[t%d]: Setting label successful for process %s to %s\n", cmdCt, proc, level );
 	free( level );
-	free( m );
-	free( new );
 
 	return 0;
 }
@@ -266,7 +263,10 @@ int checkTrans( FILE *fh, char *proc, char *file, int op, int ttype ){
 			if(new!=NULL){
 				/* log result */
 				trans *apply = (trans *)new->data;
-				proc_map->l = apply->new;
+				if(op==O_WRITE)
+					file_map->l = apply->new;
+				else
+					proc_map->l = apply->new;
 				char *level = (char *) malloc( apply->new->len+1 );
 				strncpy( level, apply->new->name, apply->new->len );
 				level[apply->new->len] = 0;
